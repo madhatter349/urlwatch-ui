@@ -8,8 +8,9 @@ WORKDIR /usr/src/app
 COPY package.json .
 COPY pnpm-lock.yaml .
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install a specific version of pnpm that is known to be compatible with lockfileVersion 5.4.
+# Adjust the version as needed based on compatibility and testing.
+RUN npm install -g pnpm@6
 
 # Install dependencies using the frozen lockfile to ensure reproducibility
 RUN pnpm install --frozen-lockfile
@@ -40,9 +41,7 @@ COPY --from=BUILD_IMAGE /usr/src/app/package.json ./package.json
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 
-# Railway dynamically assigns a port for your application to use. Use the PORT environment variable.
-# Ensure your application is configured to listen on process.env.PORT.
-# If your app listens on a fixed port (e.g., 3000), make sure to adjust it to use process.env.PORT.
+# Use the PORT environment variable to ensure compatibility with Railway's dynamic port assignment
 EXPOSE $PORT
 
 # Replace "npm start" with "node" command if your package.json's start script is not configured to use the built app.
